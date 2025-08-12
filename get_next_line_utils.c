@@ -14,7 +14,7 @@
 
 size_t	gnl_strlen(const char *s)
 {
-	size_t len;
+	size_t	len;
 
 	len = 0;
 	if (!s)
@@ -46,7 +46,7 @@ char	*gnl_strdup(const char *s)
 	size_t	i;
 
 	if (!s)
-		return(NULL);
+		return (NULL);
 	len = gnl_strlen(s);
 	p = (char *)malloc(len + 1);
 	if (!p)
@@ -63,7 +63,10 @@ char	*gnl_strdup(const char *s)
 
 char	*gnl_strjoin(const char *s1, const char *s2)
 {
-	size_t	len1, len2, i, j;
+	size_t	len1;
+	size_t	len2;
+	size_t	i;
+	size_t	j;
 	char	*res;
 
 	len1 = gnl_strlen(s1);
@@ -82,4 +85,14 @@ char	*gnl_strjoin(const char *s1, const char *s2)
 		res[i++] = s2[j++];
 	res[i] = '\0';
 	return (res);
+}
+
+char	*free_and_null(char **ptr)
+{
+	if (ptr && *ptr)
+	{
+		free(*ptr);
+		*ptr = NULL;
+	}
+	return (NULL);
 }

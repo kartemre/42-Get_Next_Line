@@ -13,7 +13,6 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
@@ -25,6 +24,7 @@ char	*get_next_line(int fd);
 char	*gnl_strchr(const char *s, int c);
 char	*gnl_strdup(const char *s);
 char	*gnl_strjoin(const char *s1, const char *s2);
+char	*free_and_null(char **ptr);
 size_t	gnl_strlen(const char *s);
 
 #endif

@@ -1,3 +1,4 @@
+/*
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,11 +18,17 @@ int main(int argc, char **argv)
 	char *line;
 	int i = 1;
 	while ((line = get_next_line(fd)) != NULL)
-	{
-		printf("[%02d] %s", i++, line);
-		if (line[0] && line[gnl_strlen(line)-1] != '\n') printf("\n"); /* ensure visible line break */
+	{	
+		printf("%s", line);
+		if (line[0] && line[gnl_strlen(line)-1] != '\n') printf("\n");
 		free(line);
 	}
+	if (!line)
+	{
+		printf("%s", line);
+	}
+	
 	close(fd);
 	return 0;
 }
+*/

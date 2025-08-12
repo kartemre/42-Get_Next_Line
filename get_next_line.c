@@ -12,49 +12,44 @@
 
 #include "get_next_line.h"
 
-static char	*free_and_null(char **ptr)
+static int	read_and_join(int fd, char **stash, char *buf)
 {
-	if (ptr && *ptr)
+	ssize_t	nread;
+	char	*joined;
+
+	nread = read(fd, buf, BUFFER_SIZE);
+	if (nread <= 0)
+		return ((int)nread);
+	buf[nread] = '\0';
+	if (!*stash)
 	{
-		free(*ptr);
-		*ptr = NULL;
+		*stash = gnl_strdup("");
+		if (!*stash)
+			return (-1);
 	}
-	return (NULL);
+	joined = gnl_strjoin(*stash, buf);
+	if (!joined)
+		return (-1);
+	free(*stash);
+	*stash = joined;
+	return (1);
 }
 
 static int	fill_stash(int fd, char **stash)
 {
 	char	*buf;
-	ssize_t	nread;
-	char	*joined;
+	int		status;
 
 	buf = (char *)malloc((size_t)BUFFER_SIZE + 1);
 	if (!buf)
 		return (-1);
-	nread = 1;
-	while (!gnl_strchr(*stash, '\n') && nread > 0)
-	{
-		nread = read(fd, buf, BUFFER_SIZE);
-		if (nread < 0)
-			break;
-		buf[nread] = '\0';
-		if (!*stash)
-		{
-			*stash = gnl_strdup("");
-			if (!*stash)
-				break;
-		}
-		joined = gnl_strjoin(*stash, buf);
-		if (!joined)
-		{
-			free(buf);
-			return (-1);
-		}
-		free(*stash);
-		*stash = joined;
-	}
+	status = 1;
+	while (!gnl_strchr(*stash, '\n') && status > 0)
+		status = read_and_join(fd, stash, buf);
 	free(buf);
-	return ((nread < 0) ? -1 : 0);	
+	if (status < 0)
+		return (-1);
+	return (0);
 }
 
 static char	*extract_line(const char *stash)
@@ -62,7 +57,7 @@ static char	*extract_line(const char *stash)
 	size_t	i;
 	size_t	k;
 	char	*line;
-	
+
 	if (!stash || !*stash)
 		return (NULL);
 	i = 0;
@@ -88,7 +83,7 @@ static char	*cut_stash(char *stash)
 	size_t	i;
 	size_t	j;
 	char	*rest;
-	
+
 	if (!stash)
 		return (NULL);
 	i = 0;
@@ -111,7 +106,7 @@ static char	*cut_stash(char *stash)
 	return (rest);
 }
 
-char    *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
 	static char	*stash;
 	char		*line;
